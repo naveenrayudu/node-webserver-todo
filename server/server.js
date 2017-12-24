@@ -14,6 +14,17 @@ const app = express();
 app.use(bodyParser.json());
 
 
+app.get('/todos', (req, res)=>{
+    toDoModel.find({})
+        .then((todos)=>{
+            res.send({todos})
+        })
+        .catch(err =>{
+            res.status(400).send(err);
+        });
+});
+
+
 app.post('/todos',(req, res)=>{
     console.log(req.body);
     var todo = new toDoModel({
