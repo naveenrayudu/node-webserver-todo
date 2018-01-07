@@ -3,13 +3,20 @@
  */
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectID} = require('mongodb');
 
 const {toDoModel} = require('../models/todo');
 const {app} = require('../server');
 
 const todosCreate = [
-    {text:'first todo'},
-    {text:'second todo'}
+    {
+        _id:new ObjectID(),
+        text:'first todo'
+    },
+    {
+        _id:new ObjectID(),
+        text:'second todo'
+    }
 ]
 
 beforeEach((done)=>{
@@ -80,3 +87,32 @@ describe('POST /todos',() =>{
            .end(done);
    })
 });
+
+
+describe('GET /todos/:id', ()=>{
+    it('should return a todo doc', (done)=>{
+        request(app)
+            .get(`/todos/${todosCreate[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todo.text).toBe(todosCreate[0].text);
+            })
+            .end(done);
+    });
+
+    it('should return 404 if Id not found', (done)=>{
+       const id = (new ObjectID()).toHexString();
+       request(app)
+           .get(`/todos/${id}`)
+           .expect(404)
+           .end(done);
+    });
+
+    it('should return 404 if invalid id is sent', (done)=>{
+        request(app)
+            .get(`/todos/123`)
+            .expect(404)
+            .end(done);
+    });
+});
+
