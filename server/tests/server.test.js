@@ -15,7 +15,9 @@ const todosCreate = [
     },
     {
         _id:new ObjectID(),
-        text:'second todo'
+        text:'second todo',
+        completed:true,
+        completedAt:1232
     }
 ]
 
@@ -153,5 +155,33 @@ describe ('DELETE /todos/:id', ()=>{
             .end(done);
     });
 
+});
+
+
+describe('PATCH todos/:id', ()=>{
+    it('should update the todos', (done)=>{
+        request(app)
+            .patch(`/todos/${todosCreate[0]._id}`)
+            .send({completed:true, text:'updated the text'})
+            .expect(200)
+            .expect((res) =>{
+                expect(res.body.todo.text).toBe('updated the text');
+                expect(res.body.todo.completed).toBe(true);
+                expect(!isNaN(res.body.todo.completedAt)).toBe(true);
+            })
+            .end(done);
+    });
+
+    it('should clear completedAt when complete is false', (done) =>{
+        request(app)
+            .patch(`/todos/${todosCreate[1]._id}`)
+            .send({completed:false})
+            .expect(200)
+            .expect(res =>{
+                expect(res.body.todo.completed).toBe(false);
+                expect(res.body.todo.completedAt).toNotExist();
+            })
+            .end(done);
+    })
 });
 
