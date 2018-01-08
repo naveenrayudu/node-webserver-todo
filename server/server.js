@@ -1,6 +1,7 @@
 /**
  * Created by v-navray on 12/23/17.
  */
+require('./config/config');
 const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
@@ -11,7 +12,7 @@ const {toDoModel} = require('./models/todo');
 const {UserModel} = require('./models/user');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -50,7 +51,6 @@ app.get('/todos/:id', function(req, res) {
 
 
 app.post('/todos',(req, res)=>{
-    console.log(req.body);
     var todo = new toDoModel({
         text: req.body.text
     });
