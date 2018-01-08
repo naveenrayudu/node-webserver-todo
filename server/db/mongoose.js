@@ -5,8 +5,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 mongoose.Promise = global.Promise;
-let mongooseURL = process.env.MONGODB_URL || 'mongodb://localhost:27017';
-mongoose.connect(`${mongooseURL}/ToDoApp`,{
+let mongooseURL = process.env.MONGODB_URI || 'mongodb://localhost:27017/ToDoApp';
+mongoose.connect(`${mongooseURL}`,{
     useMongoClient:true
 });
 
