@@ -10,6 +10,7 @@ const _ = require('lodash');
 const mongoose = require('./db/mongoose');
 const {toDoModel} = require('./models/todo');
 const {UserModel} = require('./models/user');
+const {authenticate} = require('./middleware/middleware');
 
 const app = express();
 const port = process.env.PORT;
@@ -95,9 +96,6 @@ app.patch('/todos/:id', (req, res) => {
 
 });
 
-
-
-
 app.delete('/todos/:id', (req, res)=>{
    const {id} = req.params;
 
@@ -115,6 +113,31 @@ app.delete('/todos/:id', (req, res)=>{
        .catch(e=>{
            return res.status(404).send();
        })
+});
+
+app.post('/users', (req, res) =>{
+
+
+    var user = _.pick(req.body.user, ["email", "password"]);
+    var userModel = new UserModel(user);
+
+
+    userModel.save()
+        .then(()=>{
+            return userModel.generateAuthToken()
+        })
+        .then((token)=>{
+            res.header('x-auth',token).send(userModel.toJSON())
+        })
+        .catch(e=>{
+            res.status(404).send(e);
+        })
+
+});
+
+
+app.get('/users/me', authenticate, (req, res)=>{
+    return res.send(req.user);
 });
 
 app.listen(port, ()=>{
