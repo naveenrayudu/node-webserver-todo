@@ -11,6 +11,8 @@ const mongoose = require('./db/mongoose');
 const {toDoModel} = require('./models/todo');
 const {UserModel} = require('./models/user');
 const {authenticate} = require('./middleware/middleware');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const port = process.env.PORT;
@@ -139,6 +141,26 @@ app.post('/users', (req, res) =>{
 app.get('/users/me', authenticate, (req, res)=>{
     return res.send(req.user);
 });
+
+
+app.post('/users/login', (req, res)=>{
+
+    const {email} = req.body.user;
+    const {password} = req.body.user;
+
+    UserModel.findByCredentials(email, password)
+        .then((user)=>{
+            user.generateAuthToken()
+                .then(token =>{
+                    res.header('x-auth',token).send(user.toJSON())
+                })
+        })
+        .catch(e=>{
+            console.log(e);
+            res.status(400).send(e);
+        })
+
+})
 
 app.listen(port, ()=>{
     console.log(`Started on port ${port}`);
