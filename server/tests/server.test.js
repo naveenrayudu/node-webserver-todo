@@ -241,3 +241,54 @@ describe('POST /users',()=>{
             .end(done);
     })
 })
+
+describe('POST /users/login', ()=>{
+    it('should login user and return auth token', (done)=>{
+        request(app)
+            .post('/users/login')
+            .send({user:{email:usersToCreate[1].email, password:usersToCreate[1].password}})
+            .expect(200)
+            .expect((res)=>{
+                expect(res.header['x-auth']).toExist();
+                expect(res.body._id).toExist();
+                expect(res.body.email).toBe(usersToCreate[1].email)
+            })
+            .end(err=>{
+                if(err){
+                   return done(err);
+                }
+
+                UserModel.findOne({email:usersToCreate[1].email}).then((user)=>{
+                    expect(user.tokens[0]).toInclude({
+                        access:'auth',
+                        token:res.header['x-auth']
+                    });
+                    done();
+                }).catch(e=>{
+                    done();
+                })
+            })
+    });
+
+    it('should reject invalid login', (done)=>{
+        request(app)
+            .post('/users/login')
+            .send({user:{email:usersToCreate[1].email, password:'wrongpassword'}})
+            .expect(400)
+            .expect((res)=>{
+                expect(res.header['x-auth']).toNotExist();
+            })
+            .end(e=>{
+                if(e){
+                    return done(e);
+                }
+
+                UserModel.findOne({email:usersToCreate[1].email}).then(user =>{
+                    expect(user.tokens.length).toEqual(0);
+                    done();
+                }).catch(err=>{
+                    done(err);
+                })
+            })
+    })
+})
