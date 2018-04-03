@@ -313,7 +313,7 @@ describe('POST /users/login', ()=>{
                 }
 
                 UserModel.findOne({email:usersToCreate[1].email}).then((user)=>{
-                    expect(user.tokens[0]).toInclude({
+                    expect(user.toObject().tokens[0]).toMatchObject({
                         access:'auth',
                         token:res.header['x-auth']
                     });
