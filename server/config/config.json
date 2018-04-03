@@ -1,0 +1,12 @@
+{
+  "test":{
+    "PORT":3000,
+    "MONGODB_URI":"mongodb://localhost:27017/ToDoAppTest",
+    "JWT_TOKEN":"vfsdreuwrvmdnvkegrldsdgey72sd2"
+  },
+  "development":{
+    "PORT":3000,
+    "MONGODB_URI":"mongodb://localhost:27017/ToDoApp",
+    "JWT_TOKEN":"skdqsdsblsadybfjxkx0shys8yhzo0ss"
+  }
+}

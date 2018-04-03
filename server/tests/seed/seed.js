@@ -34,7 +34,7 @@ const usersToCreate = [
         tokens:[
             {
                 access:'auth',
-                token:jwt.sign({_id:userIdOne, access:'auth'},'abc123').toString()
+                token:jwt.sign({_id:userIdOne, access:'auth'},process.env.JWT_TOKEN).toString()
             }
         ]
     },
@@ -45,7 +45,7 @@ const usersToCreate = [
         tokens:[
             {
                 access:'auth',
-                token:jwt.sign({_id:userIdTwo, access:'auth'},'abc123').toString()
+                token:jwt.sign({_id:userIdTwo, access:'auth'},process.env.JWT_TOKEN).toString()
             }
         ]
     }
