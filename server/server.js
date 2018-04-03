@@ -20,8 +20,10 @@ const port = process.env.PORT;
 app.use(bodyParser.json());
 
 
-app.get('/todos', (req, res)=>{
-    toDoModel.find({})
+app.get('/todos', authenticate, (req, res)=>{
+    toDoModel.find({
+        _creator:req.user._id
+    })
         .then((todos)=>{
             res.send({todos})
         })
@@ -31,14 +33,14 @@ app.get('/todos', (req, res)=>{
 });
 
 
-app.get('/todos/:id', function(req, res) {
+app.get('/todos/:id', authenticate, function(req, res) {
     const {id} = req.params;
     if(!ObjectID.isValid(id)){
         res.status(404).send();
         return;
     };
 
-    toDoModel.findById(id)
+    toDoModel.findOne({_id:id, _creator:req.user._id})
         .then(todo =>{
             if(todo){
                 res.send({'todo':todo});
@@ -53,9 +55,10 @@ app.get('/todos/:id', function(req, res) {
 })
 
 
-app.post('/todos',(req, res)=>{
+app.post('/todos',authenticate,(req, res)=>{
     var todo = new toDoModel({
-        text: req.body.text
+        text: req.body.text,
+        _creator:req.user._id
     });
 
     todo.save()
@@ -69,7 +72,7 @@ app.post('/todos',(req, res)=>{
 });
 
 
-app.patch('/todos/:id', (req, res) => {
+app.patch('/todos/:id',authenticate, (req, res) => {
     const {id} = req.params;
 
     if(!ObjectID.isValid(id)){
@@ -85,7 +88,7 @@ app.patch('/todos/:id', (req, res) => {
         body.completed = false;
     }
 
-    toDoModel.findByIdAndUpdate(id, {$set:body}, {new:true})
+    toDoModel.findOneAndUpdate({_id:id, _creator: req.user._id}, {$set:body}, {new:true})
         .then(todo =>{
             if(todo)
                 return res.send({todo});
@@ -98,14 +101,14 @@ app.patch('/todos/:id', (req, res) => {
 
 });
 
-app.delete('/todos/:id', (req, res)=>{
+app.delete('/todos/:id', authenticate, (req, res)=>{
    const {id} = req.params;
 
    if(!ObjectID.isValid(id)){
        return res.status(404).send();
    };
 
-   toDoModel.findByIdAndRemove(id)
+   toDoModel.findOneAndRemove({_id:id, _creator:req.user._id})
        .then(todo =>{
            if(todo){
                return res.send(todo);
@@ -156,8 +159,7 @@ app.post('/users/login', (req, res)=>{
                 })
         })
         .catch(e=>{
-            console.log(e);
-            res.status(400).send(e);
+            res.status(400).send();
         })
 
 })
