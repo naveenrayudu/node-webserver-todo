@@ -292,3 +292,30 @@ describe('POST /users/login', ()=>{
             })
     })
 })
+
+
+describe('DELETE /token/delete', ()=>{
+    it('should remove token from request and database if it is valid', (done)=>{
+        request(app)
+            .delete('/token/delete')
+            .set('x-auth',usersToCreate[0].tokens[0].token)
+            .send()
+            .expect(200)
+            .expect((req)=>{
+                expect(req.header['x-auth']).toNotExist();
+            })
+            .end(e=>{
+
+                if(e){
+                    return done(e);
+                }
+                UserModel.findById(usersToCreate[0]._id)
+                    .then((user)=>{
+                        expect(user.tokens.length).toEqual(0);
+                        done()
+                    }).catch(er=>{
+                    done(er);
+                })
+            })
+    })
+})
