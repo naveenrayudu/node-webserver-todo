@@ -132,7 +132,7 @@ describe ('DELETE /todos/:id', ()=>{
 
                 toDoModel.findById(id)
                     .then(todo =>{
-                        expect(todo).toNotExist();
+                        expect(todo).toBeFalsy();
                         done();
                     })
                     .catch(e=>{
@@ -154,7 +154,7 @@ describe ('DELETE /todos/:id', ()=>{
 
                 toDoModel.findById(id)
                     .then(todo =>{
-                        expect(todo).toExist();
+                        expect(todo).toBeTruthy();
                         done();
                     }).catch(e=>{
                         done(e);
@@ -215,7 +215,7 @@ describe('PATCH todos/:id', ()=>{
             .expect(200)
             .expect(res =>{
                 expect(res.body.todo.completed).toBe(false);
-                expect(res.body.todo.completedAt).toNotExist();
+                expect(res.body.todo.completedAt).toBeFalsy();
             })
             .end(done);
     })
@@ -257,8 +257,8 @@ describe('POST /users',()=>{
             .send({user:{email, password}})
             .expect(200)
             .expect((res) =>{
-                expect(res.header['x-auth']).toExist();
-                expect(res.body._id).toExist();
+                expect(res.header['x-auth']).toBeTruthy();
+                expect(res.body._id).toBeTruthy();
                 expect(res.body.email).toBe(email);
             })
             .end((err)=>{
@@ -266,7 +266,7 @@ describe('POST /users',()=>{
                     return done(err);
                 }
                 UserModel.findOne({email}).then(user =>{
-                    expect(user).toExist();
+                    expect(user).toBeTruthy();
                     expect(user.email).toBe(email);
                     done();
                 })
@@ -303,8 +303,8 @@ describe('POST /users/login', ()=>{
             .send({user:{email:usersToCreate[1].email, password:usersToCreate[1].password}})
             .expect(200)
             .expect((res)=>{
-                expect(res.header['x-auth']).toExist();
-                expect(res.body._id).toExist();
+                expect(res.header['x-auth']).toBeTruthy();
+                expect(res.body._id).toBeTruthy();
                 expect(res.body.email).toBe(usersToCreate[1].email)
             })
             .end(err=>{
@@ -330,7 +330,7 @@ describe('POST /users/login', ()=>{
             .send({user:{email:usersToCreate[1].email, password:'wrongpassword'}})
             .expect(400)
             .expect((res)=>{
-                expect(res.header['x-auth']).toNotExist();
+                expect(res.header['x-auth']).toBeFalsy();
             })
             .end(e=>{
                 if(e){
@@ -356,7 +356,7 @@ describe('DELETE /token/delete', ()=>{
             .send()
             .expect(200)
             .expect((req)=>{
-                expect(req.header['x-auth']).toNotExist();
+                expect(req.header['x-auth']).toBeFalsy();
             })
             .end(e=>{
 
