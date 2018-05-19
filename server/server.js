@@ -140,7 +140,7 @@ app.post('/users', (req, res) =>{
 
 });
 
-app.get('/users/metest', authenticate, (req, res)=>{
+app.get('/users/metest', (req, res)=>{
     return res.send('hii');
 });
 
